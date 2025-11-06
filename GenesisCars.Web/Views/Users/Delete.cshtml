@@ -1,0 +1,25 @@
+@model GenesisCars.Application.Users.UserDto
+@{
+  ViewData["Title"] = "Delete User";
+}
+
+<h1 class="display-6">Delete User</h1>
+
+<h5 class="text-danger">Are you sure you want to delete this user?</h5>
+
+<dl class="row mt-3">
+  <dt class="col-sm-3">First Name</dt>
+  <dd class="col-sm-9">@Model.FirstName</dd>
+
+  <dt class="col-sm-3">Last Name</dt>
+  <dd class="col-sm-9">@Model.LastName</dd>
+
+  <dt class="col-sm-3">Email</dt>
+  <dd class="col-sm-9">@Model.Email</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+  <input type="hidden" asp-for="Id" />
+  <button type="submit" class="btn btn-danger">Delete</button>
+  <a class="btn btn-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+</form>

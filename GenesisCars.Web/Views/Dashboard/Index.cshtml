@@ -1,0 +1,47 @@
+@model GenesisCars.Web.Models.Dashboard.DashboardViewModel
+@{
+  ViewData["Title"] = "Dashboard";
+}
+
+<h1 class="display-6">Dashboard</h1>
+<p class="text-muted">Metrics generated @Model.GeneratedAtUtc.ToLocalTime().ToString("f").</p>
+
+<div class="row g-3">
+  <div class="col-md-6 col-xl-3">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Users</h5>
+        <p class="display-6 mb-0">@Model.TotalUsers</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Cars</h5>
+        <p class="display-6 mb-0">@Model.TotalCars</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Average Car Price</h5>
+        <p class="display-6 mb-0">@Model.AverageCarPrice.ToString("C")</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Total Inventory Value</h5>
+        <p class="display-6 mb-0">@Model.TotalInventoryValue.ToString("C")</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4">
+  <a class="btn btn-primary" asp-controller="Users" asp-action="Index">Manage Users</a>
+  <a class="btn btn-secondary" asp-controller="Cars" asp-action="Index">Manage Inventory</a>
+</div>
