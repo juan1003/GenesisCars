@@ -22,6 +22,17 @@ public class DashboardServiceTests
     Assert.Equal(2, metrics.TotalCars);
     Assert.Equal(67500m, metrics.AverageCarPrice);
     Assert.Equal(135000m, metrics.TotalInventoryValue);
+    Assert.Collection(metrics.CarPriceBreakdown,
+      first =>
+      {
+        Assert.Contains("Model S", first.Label);
+        Assert.Equal(90000m, first.Price);
+      },
+      second =>
+      {
+        Assert.Contains("Model 3", second.Label);
+        Assert.Equal(45000m, second.Price);
+      });
   }
 
   private sealed class InMemoryUserRepositoryStub : IUserRepository

@@ -11,4 +11,6 @@ public class DashboardViewModel
   public decimal TotalInventoryValue { get; set; }
 
   public DateTime GeneratedAtUtc { get; set; }
+
+  public IReadOnlyList<CarPriceSliceViewModel> CarPriceBreakdown { get; set; } = Array.Empty<CarPriceSliceViewModel>();
 }

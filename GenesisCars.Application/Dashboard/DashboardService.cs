@@ -27,12 +27,17 @@ public sealed class DashboardService : IDashboardService
     var totalCars = cars.Count;
     var totalValue = cars.Sum(car => car.Price);
     var averagePrice = totalCars > 0 ? totalValue / totalCars : 0m;
+    var carPriceBreakdown = cars
+        .Select(car => new CarPriceSliceDto($"{car.Year} {car.Model}", car.Price))
+        .OrderByDescending(slice => slice.Price)
+        .ToList();
 
     return new DashboardMetricsDto(
         totalUsers,
         totalCars,
         decimal.Round(averagePrice, 2, MidpointRounding.AwayFromZero),
         decimal.Round(totalValue, 2, MidpointRounding.AwayFromZero),
-        DateTime.UtcNow);
+        DateTime.UtcNow,
+        carPriceBreakdown);
   }
 }

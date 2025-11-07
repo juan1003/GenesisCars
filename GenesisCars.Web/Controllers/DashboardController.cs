@@ -1,3 +1,4 @@
+using System.Linq;
 using GenesisCars.Application.Dashboard;
 using GenesisCars.Web.Models.Dashboard;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +26,14 @@ public class DashboardController : Controller
       TotalCars = metrics.TotalCars,
       AverageCarPrice = metrics.AverageCarPrice,
       TotalInventoryValue = metrics.TotalInventoryValue,
-      GeneratedAtUtc = metrics.GeneratedAtUtc
+      GeneratedAtUtc = metrics.GeneratedAtUtc,
+      CarPriceBreakdown = metrics.CarPriceBreakdown
+        .Select(slice => new CarPriceSliceViewModel
+        {
+          Label = slice.Label,
+          Price = slice.Price
+        })
+        .ToList()
     };
 
     return View(viewModel);

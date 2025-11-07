@@ -1,3 +1,5 @@
+@using System.Linq
+@using System.Text.Json
 @model GenesisCars.Web.Models.Dashboard.DashboardViewModel
 @{
   ViewData["Title"] = "Dashboard";
@@ -41,7 +43,106 @@
   </div>
 </div>
 
+<div class="row g-4 mt-1">
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Users vs. Inventory</h5>
+        <p class="text-muted small">Quick snapshot of the people-to-vehicle mix in this experiment.</p>
+        <canvas id="userInventoryChart" height="240" aria-label="Users versus inventory chart" role="img"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Inventory Value by Vehicle</h5>
+        <p class="text-muted small">Shows how each vehicle contributes to the total experimental inventory value.</p>
+        <canvas id="priceBreakdownChart" height="240" aria-label="Inventory value by vehicle chart" role="img"></canvas>
+        <p class="chart-empty text-muted text-center mb-0 @(Model.CarPriceBreakdown.Any() ? "d-none" : string.Empty)">
+          Add cars to visualize the price breakdown.
+        </p>
+      </div>
+      <div class="card-footer text-muted small">Total Inventory Value: @Model.TotalInventoryValue.ToString("C")</div>
+    </div>
+  </div>
+</div>
+
 <div class="mt-4">
   <a class="btn btn-primary" asp-controller="Users" asp-action="Index">Manage Users</a>
   <a class="btn btn-secondary" asp-controller="Cars" asp-action="Index">Manage Inventory</a>
 </div>
+
+@section Scripts {
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+  <script>
+    (function () {
+      const userInventoryCanvas = document.getElementById('userInventoryChart');
+      if (userInventoryCanvas) {
+        new Chart(userInventoryCanvas, {
+          type: 'pie',
+          data: {
+            labels: @Html.Raw(JsonSerializer.Serialize(new[] { "Users", "Inventory" })),
+            datasets: [{
+              label: 'Counts',
+              data: @Html.Raw(JsonSerializer.Serialize(new[] { Model.TotalUsers, Model.TotalCars })),
+              backgroundColor: ['#2563eb', '#16a34a'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            plugins: {
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }
+        });
+      }
+
+      const priceCanvas = document.getElementById('priceBreakdownChart');
+      if (priceCanvas) {
+        const labels = @Html.Raw(JsonSerializer.Serialize(Model.CarPriceBreakdown.Select(slice => slice.Label)));
+        const data = @Html.Raw(JsonSerializer.Serialize(Model.CarPriceBreakdown.Select(slice => slice.Price)));
+        const hasData = Array.isArray(data) && data.some(value => value > 0);
+
+        if (hasData) {
+          new Chart(priceCanvas, {
+            type: 'doughnut',
+            data: {
+              labels,
+              datasets: [{
+                label: 'Vehicle Price',
+                data,
+                backgroundColor: buildPalette(labels.length),
+                borderWidth: 0
+              }]
+            },
+            options: {
+              plugins: {
+                legend: {
+                  position: 'bottom'
+                }
+              }
+            }
+          });
+        } else {
+          priceCanvas.classList.add('d-none');
+          const emptyMessage = priceCanvas.parentElement?.querySelector('.chart-empty');
+          if (emptyMessage) {
+            emptyMessage.classList.remove('d-none');
+          }
+        }
+      }
+
+      function buildPalette(count) {
+        const palette = ['#2563eb', '#7c3aed', '#16a34a', '#f97316', '#facc15', '#dc2626', '#0ea5e9', '#ec4899', '#14b8a6', '#65a30d'];
+        const colors = [];
+        for (let index = 0; index < count; index += 1) {
+          colors.push(palette[index % palette.length]);
+        }
+        return colors;
+      }
+    })();
+  </script>
+}

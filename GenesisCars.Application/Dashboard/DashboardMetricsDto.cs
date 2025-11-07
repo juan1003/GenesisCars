@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace GenesisCars.Application.Dashboard;
 
 public sealed record DashboardMetricsDto(
@@ -5,5 +7,6 @@ public sealed record DashboardMetricsDto(
     int TotalCars,
     decimal AverageCarPrice,
     decimal TotalInventoryValue,
-    DateTime GeneratedAtUtc
+    DateTime GeneratedAtUtc,
+    IReadOnlyList<CarPriceSliceDto> CarPriceBreakdown
 );
