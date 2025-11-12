@@ -1,0 +1,153 @@
+@model AccountDetailsViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+  ViewData["Title"] = "Account Details";
+  var account = Model.Account;
+  var recipientOptions = Model.OtherAccounts
+  .Select(a => new SelectListItem
+  {
+    Value = a.Id.ToString(),
+    Text = $"{a.OwnerName} ({a.Balance:C})"
+  })
+  .ToList();
+}
+
+<h1 class="mb-4">Account Details</h1>
+
+@if (TempData["StatusMessage"] is string statusMessage)
+{
+  <div class="alert alert-success" role="alert">@statusMessage</div>
+}
+
+<div class="card mb-4">
+  <div class="card-body">
+    <dl class="row mb-0">
+      <dt class="col-sm-3">Owner</dt>
+      <dd class="col-sm-9">@account.OwnerName</dd>
+      <dt class="col-sm-3">Balance</dt>
+      <dd class="col-sm-9 fw-bold">@account.Balance.ToString("C")</dd>
+      <dt class="col-sm-3">Created</dt>
+      <dd class="col-sm-9">@account.CreatedAtUtc.ToLocalTime().ToString("f")</dd>
+      <dt class="col-sm-3">Updated</dt>
+      <dd class="col-sm-9">@account.UpdatedAtUtc.ToLocalTime().ToString("f")</dd>
+    </dl>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-12 col-lg-4">
+    <div class="card h-100">
+      <div class="card-header">Credit</div>
+      <div class="card-body">
+        <form asp-action="Credit" asp-route-id="@account.Id" method="post">
+          <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+          <div class="mb-3">
+            <label asp-for="Credit.Amount" class="form-label"></label>
+            <input asp-for="Credit.Amount" class="form-control" />
+            <span asp-validation-for="Credit.Amount" class="text-danger"></span>
+          </div>
+          <button type="submit" class="btn btn-success">Credit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div class="card h-100">
+      <div class="card-header">Debit</div>
+      <div class="card-body">
+        <form asp-action="Debit" asp-route-id="@account.Id" method="post">
+          <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+          <div class="mb-3">
+            <label asp-for="Debit.Amount" class="form-label"></label>
+            <input asp-for="Debit.Amount" class="form-control" />
+            <span asp-validation-for="Debit.Amount" class="text-danger"></span>
+          </div>
+          <button type="submit" class="btn btn-warning">Debit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div class="card h-100">
+      <div class="card-header">Transfer</div>
+      <div class="card-body">
+        @if (!recipientOptions.Any())
+        {
+          <div class="alert alert-info" role="alert">
+            Create another account to enable transfers.
+          </div>
+        }
+        else
+        {
+          <form asp-action="Transfer" asp-route-id="@account.Id" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+              <label asp-for="Transfer.RecipientAccountId" class="form-label"></label>
+              <select asp-for="Transfer.RecipientAccountId" asp-items="recipientOptions" class="form-select">
+                <option value="">Select an account</option>
+              </select>
+              <span asp-validation-for="Transfer.RecipientAccountId" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+              <label asp-for="Transfer.Amount" class="form-label"></label>
+              <input asp-for="Transfer.Amount" class="form-control" />
+              <span asp-validation-for="Transfer.Amount" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Transfer</button>
+          </form>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4">
+  <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+  <a asp-action="Delete" asp-route-id="@account.Id" class="btn btn-outline-danger ms-2">Delete</a>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header">Transaction History</div>
+  <div class="card-body">
+    @if (account.Transactions.Any())
+    {
+      <div class="table-responsive">
+        <table class="table table-striped table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th class="text-end">Amount</th>
+              <th class="text-end">Balance After</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var transaction in account.Transactions)
+            {
+              <tr>
+                <td>@transaction.TimestampUtc.ToLocalTime().ToString("g")</td>
+                <td>@transaction.Type</td>
+                <td class="text-end">@transaction.Amount.ToString("C")</td>
+                <td class="text-end">@transaction.BalanceAfter.ToString("C")</td>
+                <td>@transaction.Description</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    else
+    {
+      <div class="alert alert-info mb-0" role="alert">
+        No transactions recorded yet.
+      </div>
+    }
+  </div>
+</div>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+}

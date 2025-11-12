@@ -1,3 +1,4 @@
+using GenesisCars.Application.Accounts;
 using GenesisCars.Application.Auth;
 using GenesisCars.Application.Dashboard;
 using GenesisCars.Application.Inventory;
@@ -14,6 +15,7 @@ public static class ServiceCollectionExtensions
     services.AddScoped<IAuthService, AuthService>();
     services.AddScoped<IDashboardService, DashboardService>();
     services.AddScoped<IUserService, UserService>();
+    services.AddScoped<IAccountService, AccountService>();
     return services;
   }
 }

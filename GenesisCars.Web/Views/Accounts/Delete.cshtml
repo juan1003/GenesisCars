@@ -1,0 +1,27 @@
+@model AccountDto
+@{
+    ViewData["Title"] = "Delete Account";
+}
+
+<h1 class="mb-4">Delete Account</h1>
+
+<div class="alert alert-warning" role="alert">
+    <strong>Are you sure?</strong> This action cannot be undone.
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Owner</dt>
+    <dd class="col-sm-9">@Model.OwnerName</dd>
+    <dt class="col-sm-3">Balance</dt>
+    <dd class="col-sm-9">@Model.Balance.ToString("C")</dd>
+    <dt class="col-sm-3">Created</dt>
+    <dd class="col-sm-9">@Model.CreatedAtUtc.ToLocalTime().ToString("f")</dd>
+    <dt class="col-sm-3">Updated</dt>
+    <dd class="col-sm-9">@Model.UpdatedAtUtc.ToLocalTime().ToString("f")</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary ms-2">Cancel</a>
+</form>

@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
   {
     services.AddSingleton<ICarRepository, InMemoryCarRepository>();
     services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+    services.AddSingleton<IAccountRepository, InMemoryAccountRepository>();
     services.AddSingleton<IUnitOfWork, NoOpUnitOfWork>();
     return services;
   }
