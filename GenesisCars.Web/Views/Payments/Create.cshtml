@@ -1,0 +1,44 @@
+@model GenesisCars.Web.Models.Payments.PaymentIntentCreateModel
+@using GenesisCars.Application.Marketplace
+@{
+  ViewData["Title"] = "Create Payment Intent";
+  var listing = ViewBag.Listing as MarketplaceListingDto;
+}
+
+<h1 class="mb-4">Create Payment Intent</h1>
+
+@if (listing is not null)
+{
+  <div class="card mb-4">
+    <div class="card-body">
+      <h2 class="h6">Listing Summary</h2>
+      <dl class="row mb-0">
+        <dt class="col-sm-3">Car</dt>
+        <dd class="col-sm-9">@listing.Car.Year @listing.Car.Model</dd>
+        <dt class="col-sm-3">Asking Price</dt>
+        <dd class="col-sm-9">@listing.AskingPrice.ToString("C")</dd>
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">@listing.Status</dd>
+      </dl>
+    </div>
+  </div>
+}
+
+<form asp-action="Create" method="post" class="row g-3">
+  @Html.AntiForgeryToken()
+  <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+  <input type="hidden" asp-for="ListingId" />
+  <div class="col-12 col-md-4">
+    <label asp-for="Currency" class="form-label"></label>
+    <input asp-for="Currency" class="form-control" />
+    <span asp-validation-for="Currency" class="text-danger"></span>
+  </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-primary">Create Payment Intent</button>
+    <a asp-controller="Marketplace" asp-action="Details" asp-route-id="@Model.ListingId" class="btn btn-secondary ms-2">Cancel</a>
+  </div>
+</form>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+}

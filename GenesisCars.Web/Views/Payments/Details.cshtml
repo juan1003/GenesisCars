@@ -1,0 +1,71 @@
+@model GenesisCars.Web.Models.Payments.PaymentIntentViewModel
+@using GenesisCars.Domain.Entities
+@{
+  ViewData["Title"] = "Payment Details";
+  var payment = Model.PaymentIntent;
+  var listing = Model.Listing;
+}
+
+<h1 class="mb-4">Payment Details</h1>
+
+@if (TempData["StatusMessage"] is string statusMessage)
+{
+  <div class="alert alert-info" role="alert">@statusMessage</div>
+}
+
+<div class="row g-4">
+  <div class="col-12 col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h5">Payment Intent</h2>
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Amount</dt>
+          <dd class="col-sm-8 fw-semibold">@payment.Amount.ToString("C")</dd>
+          <dt class="col-sm-4">Currency</dt>
+          <dd class="col-sm-8">@payment.Currency</dd>
+          <dt class="col-sm-4">Status</dt>
+          <dd class="col-sm-8">@payment.Status</dd>
+          <dt class="col-sm-4">Provider Id</dt>
+          <dd class="col-sm-8"><code>@payment.ProviderIntentId</code></dd>
+          <dt class="col-sm-4">Client Secret</dt>
+          <dd class="col-sm-8"><code>@payment.ClientSecret</code></dd>
+          <dt class="col-sm-4">Created</dt>
+          <dd class="col-sm-8">@payment.CreatedAtUtc.ToLocalTime().ToString("f")</dd>
+          <dt class="col-sm-4">Updated</dt>
+          <dd class="col-sm-8">@payment.UpdatedAtUtc.ToLocalTime().ToString("f")</dd>
+        </dl>
+      </div>
+      <div class="card-footer d-flex gap-2">
+        <a asp-controller="Marketplace" asp-action="Details" asp-route-id="@listing.Id" class="btn btn-secondary">Back to Listing</a>
+        @if (payment.Status == PaymentStatus.Pending)
+        {
+          <form asp-action="Confirm" asp-route-id="@payment.Id" method="post" class="ms-auto">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-success">Confirm</button>
+          </form>
+          <form asp-action="Cancel" asp-route-id="@payment.Id" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-danger">Cancel</button>
+          </form>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h5">Listing Summary</h2>
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Car</dt>
+          <dd class="col-sm-8">@listing.Car.Year @listing.Car.Model</dd>
+          <dt class="col-sm-4">Asking Price</dt>
+          <dd class="col-sm-8">@listing.AskingPrice.ToString("C")</dd>
+          <dt class="col-sm-4">Status</dt>
+          <dd class="col-sm-8">@listing.Status</dd>
+          <dt class="col-sm-4">Listing Id</dt>
+          <dd class="col-sm-8"><code>@listing.Id</code></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
