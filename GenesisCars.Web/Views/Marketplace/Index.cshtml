@@ -1,0 +1,68 @@
+@model IReadOnlyCollection<GenesisCars.Application.Marketplace.MarketplaceListingDto>
+@using System.Linq
+@{
+  ViewData["Title"] = "Marketplace";
+  string StatusClass(GenesisCars.Domain.Entities.MarketplaceListingStatus status) => status switch
+  {
+    GenesisCars.Domain.Entities.MarketplaceListingStatus.Active => "bg-success",
+    GenesisCars.Domain.Entities.MarketplaceListingStatus.Sold => "bg-secondary",
+    GenesisCars.Domain.Entities.MarketplaceListingStatus.Archived => "bg-dark",
+    _ => "bg-info"
+  };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="mb-0">Marketplace</h1>
+  <a asp-action="Create" class="btn btn-primary">Create Listing</a>
+</div>
+
+@if (TempData["StatusMessage"] is string statusMessage)
+{
+  <div class="alert alert-success" role="alert">@statusMessage</div>
+}
+
+@if (!Model.Any())
+{
+  <div class="alert alert-info" role="alert">
+    There are no marketplace listings yet. Create one to showcase inventory vehicles.
+  </div>
+}
+else
+{
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead>
+        <tr>
+          <th scope="col">Car</th>
+          <th scope="col" class="text-end">Inventory Price</th>
+          <th scope="col" class="text-end">Asking Price</th>
+          <th scope="col">Status</th>
+          <th scope="col">Created</th>
+          <th scope="col">Updated</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var listing in Model)
+        {
+          <tr>
+            <td>
+              <div class="fw-semibold">@listing.Car.Model</div>
+              <div class="text-muted">@listing.Car.Year</div>
+            </td>
+            <td class="text-end">@listing.Car.InventoryPrice.ToString("C")</td>
+            <td class="text-end">@listing.AskingPrice.ToString("C")</td>
+            <td>
+              <span class="badge @StatusClass(listing.Status)">@listing.Status</span>
+            </td>
+            <td>@listing.CreatedAtUtc.ToLocalTime().ToString("g")</td>
+            <td>@listing.UpdatedAtUtc.ToLocalTime().ToString("g")</td>
+            <td class="text-end">
+              <a asp-action="Details" asp-route-id="@listing.Id" class="btn btn-sm btn-outline-primary">Details</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
