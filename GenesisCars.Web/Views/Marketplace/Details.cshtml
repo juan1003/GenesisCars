@@ -1,0 +1,89 @@
+@model GenesisCars.Application.Marketplace.MarketplaceListingDto
+@using GenesisCars.Domain.Entities
+@{
+  ViewData["Title"] = "Listing Details";
+  var listing = Model;
+  string StatusClass(MarketplaceListingStatus status) => status switch
+  {
+    MarketplaceListingStatus.Active => "bg-success",
+    MarketplaceListingStatus.Sold => "bg-secondary",
+    MarketplaceListingStatus.Archived => "bg-dark",
+    _ => "bg-info"
+  };
+}
+
+<h1 class="mb-4">Listing Details</h1>
+
+@if (TempData["StatusMessage"] is string statusMessage)
+{
+  <div class="alert alert-success" role="alert">@statusMessage</div>
+}
+
+@if (ViewData["MarketplaceError"] is string errorMessage)
+{
+  <div class="alert alert-danger" role="alert">@errorMessage</div>
+}
+
+<div class="row g-4">
+  <div class="col-12 col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h2 class="h5 mb-0">Listing</h2>
+          <span class="badge @StatusClass(listing.Status)">@listing.Status</span>
+        </div>
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Asking Price</dt>
+          <dd class="col-sm-8 fw-semibold">@listing.AskingPrice.ToString("C")</dd>
+          <dt class="col-sm-4">Description</dt>
+          <dd class="col-sm-8">@listing.Description ?? "—"</dd>
+          <dt class="col-sm-4">Created</dt>
+          <dd class="col-sm-8">@listing.CreatedAtUtc.ToLocalTime().ToString("f")</dd>
+          <dt class="col-sm-4">Updated</dt>
+          <dd class="col-sm-8">@listing.UpdatedAtUtc.ToLocalTime().ToString("f")</dd>
+        </dl>
+      </div>
+      <div class="card-footer d-flex align-items-center gap-2">
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+        <a asp-action="Edit" asp-route-id="@listing.Id" class="btn btn-outline-primary">Edit</a>
+        <div class="ms-auto d-flex gap-2">
+          @if (listing.Status == MarketplaceListingStatus.Active)
+          {
+            <form asp-action="MarkAsSold" asp-route-id="@listing.Id" method="post">
+              @Html.AntiForgeryToken()
+              <button type="submit" class="btn btn-success">Mark as Sold</button>
+            </form>
+            <form asp-action="Archive" asp-route-id="@listing.Id" method="post">
+              @Html.AntiForgeryToken()
+              <button type="submit" class="btn btn-outline-dark">Archive</button>
+            </form>
+          }
+          else if (listing.Status == MarketplaceListingStatus.Sold)
+          {
+            <form asp-action="Archive" asp-route-id="@listing.Id" method="post">
+              @Html.AntiForgeryToken()
+              <button type="submit" class="btn btn-outline-dark">Archive</button>
+            </form>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h5">Inventory Vehicle</h2>
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Model</dt>
+          <dd class="col-sm-8">@listing.Car.Model</dd>
+          <dt class="col-sm-4">Year</dt>
+          <dd class="col-sm-8">@listing.Car.Year</dd>
+          <dt class="col-sm-4">Inventory Price</dt>
+          <dd class="col-sm-8">@listing.Car.InventoryPrice.ToString("C")</dd>
+          <dt class="col-sm-4">Car Id</dt>
+          <dd class="col-sm-8"><code>@listing.Car.Id</code></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>

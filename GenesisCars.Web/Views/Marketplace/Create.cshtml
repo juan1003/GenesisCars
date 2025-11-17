@@ -1,0 +1,45 @@
+@model GenesisCars.Web.Models.Marketplace.MarketplaceListingInputModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Linq
+@{
+  ViewData["Title"] = "Create Marketplace Listing";
+  var carOptions = ViewBag.CarOptions as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+<h1 class="mb-4">Create Marketplace Listing</h1>
+
+@if (!carOptions.Any())
+{
+  <div class="alert alert-warning" role="alert">
+    All inventory vehicles currently have active listings. Add new cars or archive an existing listing to continue.
+  </div>
+}
+
+<form asp-action="Create" method="post" class="row g-3">
+  <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+  <div class="col-12">
+    <label asp-for="CarId" class="form-label"></label>
+    <select asp-for="CarId" asp-items="carOptions" class="form-select">
+      <option value="">Select a car</option>
+    </select>
+    <span asp-validation-for="CarId" class="text-danger"></span>
+  </div>
+  <div class="col-12 col-md-6">
+    <label asp-for="AskingPrice" class="form-label"></label>
+    <input asp-for="AskingPrice" class="form-control" />
+    <span asp-validation-for="AskingPrice" class="text-danger"></span>
+  </div>
+  <div class="col-12">
+    <label asp-for="Description" class="form-label"></label>
+    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+    <span asp-validation-for="Description" class="text-danger"></span>
+  </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+  </div>
+</form>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+}
