@@ -1,6 +1,7 @@
 using GenesisCars.Application.DependencyInjection;
 using GenesisCars.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using GenesisCars.Web.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,5 +41,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+await app.Services.EnsureInventorySeedAsync();
 
 app.Run();
